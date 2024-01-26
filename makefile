@@ -12,15 +12,19 @@ migrate-create:
 
 migrate-up:
 	@echo "migrate up"
-	@docker compose run --rm web sh -c "migrate -path /app/db/migration -source file://${MIGRATE_PATH} -database 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST_DOCKER}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable' up"
+	@docker compose run --rm web sh -c "migrate -path /app/db/migration \
+	  -source file://${MIGRATE_PATH} -database  \
+		'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST_DOCKER}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable' -verbose up $(VERSION)"
 
 migrate-down:
 	@echo "migrate down"
-	@docker compose run --rm web sh -c "migrate -path /app/db/migration -source file://${MIGRATE_PATH} -database 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST_DOCKER}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable' down"
+	@docker compose run --rm web sh -c "migrate -path /app/db/migration  \
+	-source file://${MIGRATE_PATH}  \
+	-database 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST_DOCKER}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable' down $(VERSION)"
 
 generate:
 	@echo "sqlc"
-	@docker compose run --rm web sh -c "sqlc generate"
+	@docker compose run --rm web sh -c "CGO_ENABLED=1 sqlc generate"
 
 # -ext	マイグレーションファイルの拡張子
 # -dir	マイグレーションファイルを作成する場所

@@ -21,10 +21,16 @@ docker compose down -v
 docker compose down --rmi all --volumes --remove-orphans
 
 # Makefile
+## マイグレーションファイルの作成
 make migrate-create NAME={ TABLE_NAME }
-make migrate-create NAME=users
+make migrate-create NAME=create_users2
+## マイグレーションの実行(VERSIONを指定するとそのバージョンまで実行する)
 make migrate-up
+make migrate-up VERSION="1"
+## マイグレーションのロールバック(VERSIONを指定するとそのバージョンまでロールバックする)
 make migrate-down
+make migrate-down VERSION=1
+## sqlcの実行
 make generate
 
 # migrate
@@ -40,7 +46,7 @@ docker compose exec db psql -U postgres -d db
 
 ## マイグレーション生成
 ### sqlcを実行することで、migrationファイルからGoのコードを生成する
-docker compose run --rm web sqlc generate
+docker compose run --rm -e CGO_ENABLED=1 web sqlc generate
 docker-compose exec web ls /app/db/migration
 
 # Redis
