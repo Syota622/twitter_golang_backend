@@ -47,6 +47,15 @@ func SignupHandler(db *generated.Queries) gin.HandlerFunc {
 			return
 		}
 
+		// メール送信
+		subject := "メールアドレスの確認をお願いします"
+		body := "以下のリンクをクリックしてメールアドレスの確認を完了してください: [確認リンク]"
+		err = util.SendEmail(req.Email, subject, body)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "確認メールの送信に失敗しました"})
+			return
+		}
+
 		c.JSON(http.StatusOK, user)
 	}
 }
