@@ -3,7 +3,7 @@
 //   sqlc v1.25.0
 // source: 000001_create_user.sql
 
-package db
+package generated
 
 import (
 	"context"
