@@ -45,6 +45,9 @@ func main() {
 	// SignupHandlerを/signup ルートにマッピング
 	router.POST("/signup", api.SignupHandler(queryHandler))
 
+	// メール確認エンドポイントをルートにマッピング
+	router.GET("/confirm", api.ConfirmEmailHandler(queryHandler))
+
 	// GETリクエストに対して "Hello World" を返すルートを追加
 	router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello World")

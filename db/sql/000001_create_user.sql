@@ -2,7 +2,8 @@
 INSERT INTO users (
     username,
     hashed_password,
-    email
+    email,
+    confirmation_token
 ) VALUES (
-    $1, $2, $3
-) RETURNING id, username, hashed_password, email, created_at, updated_at;
+    $1, $2, $3, $4
+) RETURNING id, username, hashed_password, email, created_at, updated_at, confirmation_token, is_confirmed;

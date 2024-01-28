@@ -35,9 +35,9 @@ make generate
 
 # migrate
 ## マイグレーションを実行
-docker compose run --rm web migrate -path /app/db/migration create -ext sql -dir db/migrations -seq users
-docker compose run --rm web migrate -path /app/db/migration -database "postgres://postgres:Passw0rd@db:5432/db?sslmode=disable" up
-docker compose run --rm web migrate -path /app/db/migration -database "postgres://postgres:Passw0rd@db:5432/db?sslmode=disable" down
+docker compose run --rm web migrate -path /app/db/migration source file://db/migrations create -ext sql -dir db/migrations -seq users
+docker compose run --rm web migrate -path /app/db/migration source file://db/migrations -database "postgres://postgres:Passw0rd@db:5432/db?sslmode=disable" up
+docker compose run --rm web migrate -path /app/db/migration source file://db/migrations -database "postgres://postgres:Passw0rd@db:5432/db?sslmode=disable" down
 
 ## データベースへの接続
 docker compose exec db psql -U postgres -d db

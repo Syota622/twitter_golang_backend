@@ -22,6 +22,18 @@ migrate-down:
 	-source file://${MIGRATE_PATH}  \
 	-database 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST_DOCKER}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable' down $(VERSION)"
 
+migrate-version:
+	@echo "migrate version"
+	@docker compose run --rm web sh -c "migrate -path /app/db/migration  \
+	-source file://${MIGRATE_PATH}  \
+	-database 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST_DOCKER}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable' version"
+
+migrate-force:
+	@echo "migrate force"
+	@docker compose run --rm web sh -c "migrate -path /app/db/migration  \
+	-source file://${MIGRATE_PATH}  \
+	-database 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST_DOCKER}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable' force $(VERSION)"
+
 generate:
 	@echo "sqlc"
 	@docker compose run --rm web sh -c "CGO_ENABLED=1 sqlc generate"

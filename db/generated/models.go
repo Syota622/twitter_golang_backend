@@ -9,10 +9,12 @@ import (
 )
 
 type User struct {
-	ID             int32        `json:"id"`
-	Username       string       `json:"username"`
-	HashedPassword string       `json:"hashed_password"`
-	Email          string       `json:"email"`
-	CreatedAt      sql.NullTime `json:"created_at"`
-	UpdatedAt      sql.NullTime `json:"updated_at"`
+	ID                int32          `json:"id"`
+	Username          string         `json:"username"`
+	HashedPassword    string         `json:"hashed_password"`
+	Email             string         `json:"email"`
+	CreatedAt         sql.NullTime   `json:"created_at"`
+	UpdatedAt         sql.NullTime   `json:"updated_at"`
+	ConfirmationToken sql.NullString `json:"confirmation_token"`
+	IsConfirmed       sql.NullBool   `json:"is_confirmed"`
 }
