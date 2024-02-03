@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 )
 
 const (
@@ -41,6 +42,24 @@ func main() {
 
 	// Ginルーターを初期化
 	router := gin.Default()
+
+	// CORSの設定
+	corsConfig := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"}, // ReactアプリのURLを許可
+		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Accept", "Authorization", "X-Requested-With"},
+	})
+
+	// GolangのrouterにCORSミドルウェアを使用
+	router.Use(func(c *gin.Context) {
+		handler := corsConfig.Handler(
+			http.HandlerFunc(
+				func(w http.ResponseWriter, r *http.Request) {
+					c.Next()
+				}))
+		handler.ServeHTTP(c.Writer, c.Request)
+	})
 
 	// SignupHandlerを/signup ルートにマッピング
 	router.POST("/signup", api.SignupHandler(queryHandler))
