@@ -45,20 +45,21 @@ func main() {
 
 	// CORSの設定
 	corsConfig := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"}, // ReactアプリのURLを許可
-		AllowCredentials: true,
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
-		AllowedHeaders:   []string{"Content-Type", "Accept", "Authorization", "X-Requested-With"},
+		AllowedOrigins:   []string{"http://localhost:3000"},                                       // ReactアプリのURLを許可
+		AllowCredentials: true,                                                                    // クッキーを許可
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},                                      // 許可するHTTPメソッド
+		AllowedHeaders:   []string{"Content-Type", "Accept", "Authorization", "X-Requested-With"}, // 許可するHTTPヘッダー
 	})
 
 	// GolangのrouterにCORSミドルウェアを使用
+	// CORSミドルウェアを使用することで、異なるオリジンからのリクエストを許可する
 	router.Use(func(c *gin.Context) {
 		handler := corsConfig.Handler(
 			http.HandlerFunc(
 				func(w http.ResponseWriter, r *http.Request) {
 					c.Next()
 				}))
-		handler.ServeHTTP(c.Writer, c.Request)
+		handler.ServeHTTP(c.Writer, c.Request) // CORSミドルウェアを使用
 	})
 
 	// SignupHandlerを/signup ルートにマッピング
