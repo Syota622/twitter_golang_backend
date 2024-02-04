@@ -73,6 +73,9 @@ func main() {
 		c.String(http.StatusOK, "Hello World")
 	})
 
+	// LoginHandlerを/login ルートにマッピング
+	router.POST("/login", api.LoginHandler(queryHandler))
+
 	// HTTPサーバー起動
 	router.Run(":8080") // デフォルトでは localhost:8080 でサーバーを起動
 }
