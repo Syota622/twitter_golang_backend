@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"twitter_golang_backend/api"
+	"twitter_golang_backend/config"
 	"twitter_golang_backend/db/generated" // generatedパッケージをインポート
 
 	"github.com/gin-gonic/gin"
@@ -13,17 +14,20 @@ import (
 	"github.com/rs/cors"
 )
 
-const (
-	host     = "db"
-	port     = 5432
-	user     = "postgres"
-	password = "Passw0rd"
-	dbname   = "db"
-)
-
 func main() {
+
+	// 環境変数の取得
+	envConfig := config.GetEnvConfig()
+
 	// データベース接続設定
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	psqlInfo := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		envConfig.DBHost,
+		envConfig.DBPort,
+		envConfig.DBUser,
+		envConfig.DBPassword,
+		envConfig.DBName,
+	)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Fatal(err)
@@ -45,7 +49,7 @@ func main() {
 
 	// CORSの設定
 	corsConfig := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},                                       // ReactアプリのURLを許可
+		AllowedOrigins:   []string{envConfig.FrontendURL},                                         // ReactアプリのURLを許可
 		AllowCredentials: true,                                                                    // クッキーを許可
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},                                      // 許可するHTTPメソッド
 		AllowedHeaders:   []string{"Content-Type", "Accept", "Authorization", "X-Requested-With"}, // 許可するHTTPヘッダー
