@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// EnvConfig は環境変数を保持する構造体
 type EnvConfig struct {
 	FrontendURL string
 	DBHost      string
@@ -16,13 +17,15 @@ type EnvConfig struct {
 	DBName      string
 }
 
+// GetEnvConfig は環境変数を取得する関数
 func GetEnvConfig() *EnvConfig {
-	// .env ファイルから環境変数を読み込む
+	// rootディレクトリの.envファイルを読み込む
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal(".envファイルは見つかりませんでした")
 	}
 
+	// 環境変数を取得
 	return &EnvConfig{
 		FrontendURL: os.Getenv("FRONTEND_URL"),
 		DBHost:      os.Getenv("DB_HOST"),
