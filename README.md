@@ -54,9 +54,12 @@ docker-compose exec web ls /app/db/migration
 go get github.com/gin-contrib/sessions
 go get github.com/gin-contrib/sessions/redis
 go get github.com/google/uuid
+go get -u github.com/rs/cors
+go get github.com/joho/godotenv
+go get github.com/go-redis/redis/v8
 
 ## redis-cli
-docker-compose exec redis redis-cli
+docker-compose exec redis redis-cli -a Passw0rd
 keys *
 get "key"
 del "key"

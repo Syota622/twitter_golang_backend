@@ -43,10 +43,13 @@ services:
       - "1025:1025" # SMTP
       - "1080:1080" # Web Interface
 
-  # redis:
-  #   image: "redis:alpine"
-  #   ports:
-  #     - "6379:6379"
+  redis:
+    image: "redis:alpine"
+    command: redis-server --requirepass Passw0rd
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=Passw0rd
 
 volumes:
   go_cache:

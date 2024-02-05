@@ -1,15 +1,18 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"twitter_golang_backend/api"
 	"twitter_golang_backend/config"
 	"twitter_golang_backend/db/generated" // generatedパッケージをインポート
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	_ "github.com/lib/pq"
 	"github.com/rs/cors"
 )
@@ -44,6 +47,24 @@ func main() {
 	// sqlc用のクエリーハンドラーを生成
 	queryHandler := generated.New(db)
 
+	// strconv.Atoiを使用して文字列からintへ変換
+	redisDBInt, _ := strconv.Atoi(envConfig.RedisDB)
+
+	// Redisクライアントを初期化
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     envConfig.RedisAddr,
+		Password: envConfig.RedisPassword,
+		DB:       redisDBInt,
+	})
+
+	// Redisに接続
+	ctx := context.Background()
+	pong, err := rdb.Ping(ctx).Result()
+	if err != nil {
+		log.Fatalf("Redisに接続できません: %v", err)
+	}
+	fmt.Println(pong, "Redisに正常に接続しました!")
+
 	// Ginルーターを初期化
 	router := gin.Default()
 
@@ -72,13 +93,13 @@ func main() {
 	// メール確認エンドポイントをルートにマッピング
 	router.GET("/confirm", api.ConfirmEmailHandler(queryHandler))
 
+	// LoginHandlerを/login ルートにマッピング
+	router.POST("/login", api.LoginHandler(queryHandler, rdb, ctx))
+
 	// GETリクエストに対して "Hello World" を返すルートを追加
 	router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello World")
 	})
-
-	// LoginHandlerを/login ルートにマッピング
-	router.POST("/login", api.LoginHandler(queryHandler))
 
 	// HTTPサーバー起動
 	router.Run(":8080") // デフォルトでは localhost:8080 でサーバーを起動
