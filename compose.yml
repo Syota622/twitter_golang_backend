@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+  web:
+    build:
+      context: .
+      target: development
+      dockerfile: ./docker/golang/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - go_cache:/root/.cache/go-build # go buildのキャッシュを永続化
+    depends_on:
+      db:
+        condition: service_healthy # dbサービスが「healthy」（健全）状態になるまで起動
+    restart:
+      on-failure # サービスが失敗した場合、再起動します。
+      # - redis
+
+  db:
+    build:
+      context: .
+      dockerfile: ./docker/postgres/Dockerfile
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Passw0rd
+      POSTGRES_DB: db
+      TZ: Asia/Tokyo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"] # PostgreSQLが準備完了しているかチェック
+      interval: 10s # チェックのインターバル
+      timeout: 5s # チェックのタイムアウト
+      retries: 5 # リトライの回数
+      start_period: 10s # コンテナ起動後、ヘルスチェックを開始するまでの時間
+
+  mailcatcher:
+    image: schickling/mailcatcher
+    ports:
+      - "1025:1025" # SMTP
+      - "1080:1080" # Web Interface
+
+  # redis:
+  #   image: "redis:alpine"
+  #   ports:
+  #     - "6379:6379"
+
+volumes:
+  go_cache:
+  db_data:

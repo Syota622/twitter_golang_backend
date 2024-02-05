@@ -1,0 +1,11 @@
+version: "1"
+packages:
+  - name: "generated"
+    path: "./db/generated"
+    queries: "./db/sql"
+    schema: "./db/migrations"
+    engine: "postgresql"
+    emit_json_tags: true            #  生成されるGoの構造体にJSONタグを付けるかどうかを指定
+    emit_prepared_queries: false    # 生成されるクエリがプリペアドステートメントとして生成されるかどうかを指定。有効化すると、一部のデータベースではパフォーマンスに影響を与える
+    emit_interface: false           # 各クエリ関数に対するインターフェースを生成するかどうかを指定。余分な抽象化を避ける
+    emit_exact_table_names: false   # テーブル名をそのまま構造体名として使用するかどうかを指定。falseに設定すると、テーブル名はキャメルケースに変換されて構造体名として使用
