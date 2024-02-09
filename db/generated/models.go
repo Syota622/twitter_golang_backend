@@ -8,6 +8,14 @@ import (
 	"database/sql"
 )
 
+type Tweet struct {
+	ID        int32        `json:"id"`
+	UserID    int32        `json:"user_id"`
+	Message   string       `json:"message"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
+}
+
 type User struct {
 	ID                int32          `json:"id"`
 	Username          string         `json:"username"`
