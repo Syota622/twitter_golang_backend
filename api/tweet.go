@@ -41,3 +41,17 @@ func CreateTweetHandler(db *generated.Queries) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"tweet": tweet})
 	}
 }
+
+// GetTweetsHandler はデータベースからツイートのリストを取得するハンドラです。
+func GetTweetsHandler(db *generated.Queries) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tweets, err := db.GetTweets(c)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "ツイートの取得に失敗しました"})
+			return
+		}
+
+		// 成功した場合はツイートのリストを含むレスポンスを返す
+		c.JSON(http.StatusOK, gin.H{"tweets": tweets})
+	}
+}
