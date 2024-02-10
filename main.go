@@ -101,10 +101,12 @@ func setupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	ctx := context.Background()
 
 	// ルートの設定
+	router.Static("/uploads", "./uploads") // 画像ファイルのアップロード先のディレクトリを指定
 	router.POST("/signup", api.SignupHandler(queryHandler))
 	router.GET("/confirm", api.ConfirmEmailHandler(queryHandler))
 	router.POST("/login", api.LoginHandler(queryHandler, rdb, ctx))
-	router.POST("/tweet", api.CreateTweetHandler(queryHandler))
+	router.POST("/upload", api.UploadImageHandler)
+	router.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler))
 	router.GET("/tweets", api.GetTweetsHandler(queryHandler))
 	router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello World")

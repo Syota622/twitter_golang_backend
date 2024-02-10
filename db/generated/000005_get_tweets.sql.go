@@ -7,25 +7,36 @@ package generated
 
 import (
 	"context"
+	"database/sql"
 )
 
 const getTweets = `-- name: GetTweets :many
-SELECT id, user_id, message, created_at, updated_at FROM tweets ORDER BY created_at DESC
+SELECT id, user_id, message, image_url, created_at, updated_at FROM tweets ORDER BY created_at DESC
 `
 
-func (q *Queries) GetTweets(ctx context.Context) ([]Tweet, error) {
+type GetTweetsRow struct {
+	ID        int32          `json:"id"`
+	UserID    int32          `json:"user_id"`
+	Message   string         `json:"message"`
+	ImageUrl  sql.NullString `json:"image_url"`
+	CreatedAt sql.NullTime   `json:"created_at"`
+	UpdatedAt sql.NullTime   `json:"updated_at"`
+}
+
+func (q *Queries) GetTweets(ctx context.Context) ([]GetTweetsRow, error) {
 	rows, err := q.db.QueryContext(ctx, getTweets)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Tweet
+	var items []GetTweetsRow
 	for rows.Next() {
-		var i Tweet
+		var i GetTweetsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
 			&i.Message,
+			&i.ImageUrl,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

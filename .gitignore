@@ -21,3 +21,6 @@ go.work
 
 # tmp
 tmp/
+
+# uploads（ツイートに画像をアップロードした時に格納されるディレクトリ）
+uploads/
