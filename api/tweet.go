@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
-	"strconv"
-	"strings"
 	"twitter_golang_backend/db/generated" // sqlcで生成されたパッケージをインポート
 
 	"github.com/gin-gonic/gin"
@@ -19,23 +17,13 @@ type CreateTweetRequest struct {
 	ImageURL string `json:"image_url"` // 画像URLを追加
 }
 
-// CreateTweetHandler はツイートを投稿するためのハンドラ
+// CreateTweetWithImageHandler はツイートを投稿するためのハンドラ
 func CreateTweetWithImageHandler(db *generated.Queries, rdb *redis.Client, ctx context.Context) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 認証トークンの処理
-		token := c.GetHeader("Authorization")
-		// トークンがBearerトークンであることを確認
-		token = strings.TrimPrefix(token, "Bearer ")
-
-		// RedisからユーザーIDを取得
-		userIDStr, err := rdb.Get(ctx, token).Result()
-		if err != nil {
+		// ユーザーIDの取得
+		userID, exists := c.Get("userID")
+		if !exists {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "認証が必要です"})
-			return
-		}
-		userID, err := strconv.Atoi(userIDStr)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "ユーザーIDの取得に失敗しました"})
 			return
 		}
 
@@ -64,7 +52,7 @@ func CreateTweetWithImageHandler(db *generated.Queries, rdb *redis.Client, ctx c
 
 		// データベースにツイートを保存
 		arg := generated.CreateTweetParams{
-			UserID:   int32(userID), // userIDの取得と変換は省略
+			UserID:   int32(userID.(int)), // ユーザーIDの取得
 			Message:  message,
 			ImageUrl: imageUrl,
 		}

@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"twitter_golang_backend/api"
 	"twitter_golang_backend/config"
 	"twitter_golang_backend/db/generated" // generatedパッケージをインポート
@@ -101,13 +102,59 @@ func setupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	ctx := context.Background()
 
 	// ルートの設定
-	router.Static("/uploads", "./uploads") // 画像ファイルのアップロード先のディレクトリを指定
 	router.POST("/signup", api.SignupHandler(queryHandler))
 	router.GET("/confirm", api.ConfirmEmailHandler(queryHandler))
 	router.POST("/login", api.LoginHandler(queryHandler, rdb, ctx))
-	router.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler, rdb, ctx))
-	router.GET("/tweets", api.GetTweetsHandler(queryHandler))
 	router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello World")
 	})
+
+	// 認証が必要なAPIグループ
+	authGroup := router.Group("/")
+	authGroup.Use(authMiddleware(rdb, ctx)) // 認証のミドルウェアを設定
+
+	// ルートの設定
+	authGroup.Static("/uploads", "./uploads") // 画像ファイルのアップロード先のディレクトリを指定
+	authGroup.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler, rdb, ctx))
+	authGroup.GET("/tweets", api.GetTweetsHandler(queryHandler))
+}
+
+// authMiddleware は認証のミドルウェアです
+func authMiddleware(rdb *redis.Client, ctx context.Context) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 認証トークンの取得("Bearer xxxxxxxxx...")
+		token := c.GetHeader("Authorization")
+
+		// トークンの有無を確認
+		if token == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "認証が必要です"})
+			c.Abort()
+			return
+		}
+
+		// トークンがBearerトークンであることを確認
+		token = strings.TrimPrefix(token, "Bearer ")
+
+		// RedisからユーザーIDを取得
+		userIDStr, err := rdb.Get(ctx, token).Result()
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "認証が必要です"})
+			c.Abort()
+			return
+		}
+
+		// ユーザーIDの変換
+		userID, err := strconv.Atoi(userIDStr)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "ユーザーIDの取得に失敗しました"})
+			c.Abort()
+			return
+		}
+
+		// ContextにユーザーIDをセット
+		c.Set("userID", userID)
+
+		// ミドルウェアチェーンを継続
+		c.Next()
+	}
 }
