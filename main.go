@@ -151,7 +151,7 @@ func authMiddleware(rdb *redis.Client, ctx context.Context) gin.HandlerFunc {
 			return
 		}
 
-		// ContextにユーザーIDをセット
+		// 後続のハンドラでユーザーIDを使用できるように設定
 		c.Set("userID", userID)
 
 		// ミドルウェアチェーンを継続
