@@ -115,8 +115,8 @@ func setupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 
 	// ルートの設定
 	authGroup.Static("/uploads", "./uploads") // 画像ファイルのアップロード先のディレクトリを指定
-	authGroup.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler, rdb, ctx))
-	authGroup.GET("/tweets", api.GetTweetsHandler(queryHandler))
+	authGroup.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler, ctx))
+	authGroup.GET("/tweets", api.GetAllTweetsHandler(queryHandler))
 }
 
 // authMiddleware は認証のミドルウェアです

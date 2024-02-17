@@ -7,7 +7,6 @@ import (
 	"twitter_golang_backend/db/generated" // sqlcで生成されたパッケージをインポート
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
 )
 
 // CreateTweetRequest はツイート投稿のためのリクエストボディを定義
@@ -18,7 +17,7 @@ type CreateTweetRequest struct {
 }
 
 // CreateTweetWithImageHandler はツイートを投稿するためのハンドラ
-func CreateTweetWithImageHandler(db *generated.Queries, rdb *redis.Client, ctx context.Context) gin.HandlerFunc {
+func CreateTweetWithImageHandler(db *generated.Queries, ctx context.Context) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// ユーザーIDの取得
 		userID, exists := c.Get("userID")
@@ -66,10 +65,10 @@ func CreateTweetWithImageHandler(db *generated.Queries, rdb *redis.Client, ctx c
 	}
 }
 
-// GetTweetsHandler はデータベースからツイートのリストを取得するハンドラ
-func GetTweetsHandler(db *generated.Queries) gin.HandlerFunc {
+// GetAllTweetsHandler はデータベースからツイートのリストを取得するハンドラ
+func GetAllTweetsHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tweets, err := db.GetTweets(c)
+		tweets, err := db.GetAllTweets(c)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "ツイートの取得に失敗しました"})
 			return
