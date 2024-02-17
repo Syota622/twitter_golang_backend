@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
+	"strconv"
 	"twitter_golang_backend/db/generated" // sqlcで生成されたパッケージをインポート
 
 	"github.com/gin-gonic/gin"
@@ -68,9 +69,30 @@ func CreateTweetWithImageHandler(db *generated.Queries, ctx context.Context) gin
 // GetAllTweetsHandler はデータベースからツイートのリストを取得するハンドラ
 func GetAllTweetsHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tweets, err := db.GetAllTweets(c)
+		// リクエストから limit と offset の値を取得
+		limitParam := c.DefaultQuery("limit", "10")
+		offsetParam := c.DefaultQuery("offset", "0")
+
+		limit, err := strconv.Atoi(limitParam)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "ツイートの取得に失敗しました"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
+			return
+		}
+
+		offset, err := strconv.Atoi(offsetParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset value"})
+			return
+		}
+
+		// データベースからツイートを取得する
+		params := generated.GetAllTweetsParams{
+			Limit:  int32(limit),
+			Offset: int32(offset),
+		}
+		tweets, err := db.GetAllTweets(c, params)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get tweets"})
 			return
 		}
 

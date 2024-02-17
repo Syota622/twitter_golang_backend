@@ -11,20 +11,27 @@ import (
 )
 
 const getAllTweets = `-- name: GetAllTweets :many
-SELECT id, user_id, message, image_url, created_at, updated_at FROM tweets ORDER BY created_at DESC
+SELECT id, user_id, message, created_at, updated_at
+FROM tweets
+ORDER BY created_at DESC
+LIMIT $1 OFFSET $2
 `
 
-type GetAllTweetsRow struct {
-	ID        int32          `json:"id"`
-	UserID    int32          `json:"user_id"`
-	Message   string         `json:"message"`
-	ImageUrl  sql.NullString `json:"image_url"`
-	CreatedAt sql.NullTime   `json:"created_at"`
-	UpdatedAt sql.NullTime   `json:"updated_at"`
+type GetAllTweetsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetAllTweets(ctx context.Context) ([]GetAllTweetsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getAllTweets)
+type GetAllTweetsRow struct {
+	ID        int32        `json:"id"`
+	UserID    int32        `json:"user_id"`
+	Message   string       `json:"message"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
+}
+
+func (q *Queries) GetAllTweets(ctx context.Context, arg GetAllTweetsParams) ([]GetAllTweetsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllTweets, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +43,6 @@ func (q *Queries) GetAllTweets(ctx context.Context) ([]GetAllTweetsRow, error) {
 			&i.ID,
 			&i.UserID,
 			&i.Message,
-			&i.ImageUrl,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
