@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"net/http"
+	"time"
 	"twitter_golang_backend/db/generated"
 	"twitter_golang_backend/utils"
 
@@ -45,24 +46,22 @@ func LoginHandler(db *generated.Queries, rdb *redis.Client, ctx context.Context)
 			return
 		}
 
-		// ユーザー認証が成功したら、リクエストデータを含むレスポンスを返す
-		c.JSON(http.StatusOK, gin.H{
-			"message":      "ログインに成功しました",
-			"request_data": req,
-		})
-
 		// ユーザー認証が成功した場合
 		// セッションID（トークン）を生成
 		sessionToken := uuid.NewString()
 
 		// トークンとユーザーIDをRedisに保存
-		_, err = rdb.Set(ctx, sessionToken, user.ID, 0).Result()
+		_, err = rdb.Set(ctx, sessionToken, user.ID, time.Hour*24).Result() // 24時間の有効期限を設定
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "セッションの保存に失敗しました"})
 			return
 		}
 
-		// クライアントにセッションID（トークン）を返す
-		c.JSON(http.StatusOK, gin.H{"token": sessionToken})
+		// ユーザー認証が成功したら、リクエストデータを含むレスポンスを返す
+		c.JSON(http.StatusOK, gin.H{
+			"message":      "ログインに成功しました",
+			"request_data": req,
+			"token":        sessionToken, // tokenを同じJSONオブジェクト内に含める
+		})
 	}
 }
