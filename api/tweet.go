@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"database/sql"
 	"net/http"
 	"strconv"
@@ -18,7 +17,7 @@ type CreateTweetRequest struct {
 }
 
 // CreateTweetWithImageHandler はツイートを投稿するためのハンドラ
-func CreateTweetWithImageHandler(db *generated.Queries, ctx context.Context) gin.HandlerFunc {
+func CreateTweetWithImageHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// ユーザーIDの取得
 		userID, exists := c.Get("userID")

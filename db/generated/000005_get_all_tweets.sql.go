@@ -7,11 +7,10 @@ package generated
 
 import (
 	"context"
-	"database/sql"
 )
 
 const getAllTweets = `-- name: GetAllTweets :many
-SELECT id, user_id, message, created_at, updated_at
+SELECT id, user_id, message, created_at, updated_at, image_url
 FROM tweets
 ORDER BY created_at DESC
 LIMIT $1 OFFSET $2
@@ -22,29 +21,22 @@ type GetAllTweetsParams struct {
 	Offset int32 `json:"offset"`
 }
 
-type GetAllTweetsRow struct {
-	ID        int32        `json:"id"`
-	UserID    int32        `json:"user_id"`
-	Message   string       `json:"message"`
-	CreatedAt sql.NullTime `json:"created_at"`
-	UpdatedAt sql.NullTime `json:"updated_at"`
-}
-
-func (q *Queries) GetAllTweets(ctx context.Context, arg GetAllTweetsParams) ([]GetAllTweetsRow, error) {
+func (q *Queries) GetAllTweets(ctx context.Context, arg GetAllTweetsParams) ([]Tweet, error) {
 	rows, err := q.db.QueryContext(ctx, getAllTweets, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetAllTweetsRow
+	var items []Tweet
 	for rows.Next() {
-		var i GetAllTweetsRow
+		var i Tweet
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
 			&i.Message,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ImageUrl,
 		); err != nil {
 			return nil, err
 		}
