@@ -47,13 +47,13 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello World")
 	})
+	router.Static("/uploads", "./uploads") // 画像ファイルのアップロード先のディレクトリを指定
 
 	// 認証が必要なAPIグループ
 	authGroup := router.Group("/")
 	authGroup.Use(AuthMiddleware(rdb)) // 認証のミドルウェアを設定
 
 	// ルートの設定
-	authGroup.Static("/uploads", "./uploads") // 画像ファイルのアップロード先のディレクトリを指定
-	authGroup.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler, rdb, ctx))
-	authGroup.GET("/tweets", api.GetTweetsHandler(queryHandler))
+	authGroup.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler))
+	authGroup.GET("/tweets", api.GetAllTweetsHandler(queryHandler))
 }
