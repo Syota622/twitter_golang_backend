@@ -91,7 +91,7 @@ func GetAllTweetsHandler(db *generated.Queries) gin.HandlerFunc {
 		}
 		tweets, err := db.GetAllTweets(c, params)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get tweets"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "ツイートの取得に失敗しました"})
 			return
 		}
 
