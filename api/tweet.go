@@ -9,13 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CreateTweetRequest はツイート投稿のためのリクエストボディを定義
-type CreateTweetRequest struct {
-	UserID   int32  `json:"user_id"`
-	Message  string `json:"message"`
-	ImageURL string `json:"image_url"` // 画像URLを追加
-}
-
 // CreateTweetWithImageHandler はツイートを投稿するためのハンドラ
 func CreateTweetWithImageHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
