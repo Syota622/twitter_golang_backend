@@ -44,6 +44,7 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	router.POST("/signup", api.SignupHandler(queryHandler))
 	router.GET("/confirm", api.ConfirmEmailHandler(queryHandler))
 	router.POST("/login", api.LoginHandler(queryHandler, rdb, ctx))
+	router.GET("/tweets/:id", api.GetTweetDetailHandler(queryHandler))
 	router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello World")
 	})

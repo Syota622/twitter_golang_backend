@@ -99,3 +99,26 @@ func GetAllTweetsHandler(db *generated.Queries) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"tweets": tweets})
 	}
 }
+
+// GetTweetDetailHandler は特定のツイートIDに対する詳細情報を取得するハンドラ
+func GetTweetDetailHandler(db *generated.Queries) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// リクエストからツイートIDを取得
+		idParam := c.Param("id")
+		id, err := strconv.Atoi(idParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ツイートIDが無効です"})
+			return
+		}
+
+		// データベースからツイートの詳細を取得
+		tweet, err := db.GetTweetByID(c, int32(id))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "ツイートの取得に失敗しました"})
+			return
+		}
+
+		// 成功した場合はツイートの詳細を含むレスポンスを返す
+		c.JSON(http.StatusOK, gin.H{"tweet": tweet})
+	}
+}
