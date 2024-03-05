@@ -20,19 +20,21 @@ type UpdateUserProfileRequest struct {
 // UpdateUserProfileHandler はプロフィール更新のハンドラーです
 func UpdateUserProfileHandler(queries *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// ユーザーIDの取得
 		userID, exists := c.Get("userID")
 		if !exists {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "認証が必要です"})
 			return
 		}
 
+		// リクエストボディのパース
 		var req UpdateUserProfileRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		// userIDの型アサーション（ここではuserIDがint型であることを前提としています）
+		// userIDの型アサーション
 		userIDInt, ok := userID.(int)
 		if !ok {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "サーバー内部エラー"})
@@ -44,6 +46,7 @@ func UpdateUserProfileHandler(queries *generated.Queries) gin.HandlerFunc {
 		profileImageUrl := sql.NullString{String: req.ProfileImageURL, Valid: req.ProfileImageURL != ""}
 		backgroundImageUrl := sql.NullString{String: req.BackgroundImageURL, Valid: req.BackgroundImageURL != ""}
 
+		// プロフィールの更新
 		err := queries.UpdateUserProfile(c, generated.UpdateUserProfileParams{
 			ID:                 int32(userIDInt), // userIDをint32型に変換
 			Username:           req.Username,
