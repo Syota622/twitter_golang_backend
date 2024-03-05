@@ -57,4 +57,5 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	// ルートの設定
 	authGroup.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler))
 	authGroup.GET("/tweets", api.GetAllTweetsHandler(queryHandler))
+	authGroup.PUT("/user/profile", api.UpdateUserProfileHandler(queryHandler))
 }

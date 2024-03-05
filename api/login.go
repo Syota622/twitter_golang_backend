@@ -34,6 +34,7 @@ func LoginHandler(db *generated.Queries, rdb *redis.Client, ctx context.Context)
 
 		// ユーザーを検索
 		user, err := db.GetUserByEmail(c, req.Email)
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "ユーザーが見つかりません"})
 			return
