@@ -61,6 +61,7 @@ func LoginHandler(db *generated.Queries, rdb *redis.Client, ctx context.Context)
 		// ユーザー認証が成功したら、リクエストデータを含むレスポンスを返す
 		c.JSON(http.StatusOK, gin.H{
 			"message":      "ログインに成功しました",
+			"id":           user.ID, // ユーザーIDを追加
 			"request_data": req,
 			"token":        sessionToken, // tokenを同じJSONオブジェクト内に含める
 		})
