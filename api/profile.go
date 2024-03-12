@@ -17,6 +17,33 @@ type UpdateUserProfileRequest struct {
 	BackgroundImageURL string `json:"background_image_url,omitempty"`
 }
 
+// GetUserProfileHandler はユーザープロフィールのハンドラーです
+func GetUserProfileHandler(queries *generated.Queries) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// ユーザーIDの取得
+		userID, exists := c.Get("userID")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "認証が必要です"})
+			return
+		}
+
+		// userIDの型アサーション
+		userIDInt, ok := userID.(int)
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "サーバー内部エラー"})
+			return
+		}
+
+		user, err := queries.GetUserByID(c, int32(userIDInt))
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, user)
+	}
+}
+
 // UpdateUserProfileHandler はプロフィール更新のハンドラーです
 func UpdateUserProfileHandler(queries *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {

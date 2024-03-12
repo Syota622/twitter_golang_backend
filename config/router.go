@@ -57,6 +57,7 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	// ルートの設定
 	authGroup.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler))        // ツイート登録
 	authGroup.GET("/tweets", api.GetAllTweetsHandler(queryHandler))                // 前ユーザーのツイートリストを取得
+	authGroup.GET("/user/:userId", api.GetUserProfileHandler(queryHandler))        // ユーザープロフィールを取得
 	authGroup.PUT("/user/profile", api.UpdateUserProfileHandler(queryHandler))     // プロフィールを更新
 	authGroup.GET("/users/:userId/tweets", api.GetUserTweetsHandler(queryHandler)) // 特定のユーザーのツイートリストを取得
 }
