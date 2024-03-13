@@ -19,7 +19,7 @@ func SetupRouter(envConfig EnvConfig) *gin.Engine {
 	corsConfig := cors.New(cors.Options{
 		AllowedOrigins:   []string{envConfig.FrontendURL},                                         // ReactアプリのURLを許可
 		AllowCredentials: true,                                                                    // クッキーを許可
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},                                      // 許可するHTTPメソッド
+		AllowedMethods:   []string{"GET", "POST", "PUT", "OPTIONS"},                               // 許可するHTTPメソッド
 		AllowedHeaders:   []string{"Content-Type", "Accept", "Authorization", "X-Requested-With"}, // 許可するHTTPヘッダー
 	})
 	// GolangのrouterにCORSミドルウェアを使用
