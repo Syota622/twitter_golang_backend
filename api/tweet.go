@@ -116,3 +116,22 @@ func GetTweetDetailHandler(db *generated.Queries) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"tweet": tweet})
 	}
 }
+
+// DeleteTweetHandler はツイートを削除するハンドラ
+func DeleteTweetHandler(queryHandler *generated.Queries) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ツイートIDが無効です"})
+			return
+		}
+
+		err = queryHandler.DeleteTweet(c, int32(id))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "ツイートの削除に失敗しました"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"status": "ツイートの削除に成功しました"})
+	}
+}
