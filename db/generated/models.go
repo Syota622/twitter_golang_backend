@@ -18,12 +18,15 @@ type Tweet struct {
 }
 
 type User struct {
-	ID                int32          `json:"id"`
-	Username          string         `json:"username"`
-	HashedPassword    string         `json:"hashed_password"`
-	Email             string         `json:"email"`
-	CreatedAt         sql.NullTime   `json:"created_at"`
-	UpdatedAt         sql.NullTime   `json:"updated_at"`
-	ConfirmationToken sql.NullString `json:"confirmation_token"`
-	IsConfirmed       sql.NullBool   `json:"is_confirmed"`
+	ID                 int32          `json:"id"`
+	Username           string         `json:"username"`
+	HashedPassword     string         `json:"hashed_password"`
+	Email              string         `json:"email"`
+	CreatedAt          sql.NullTime   `json:"created_at"`
+	UpdatedAt          sql.NullTime   `json:"updated_at"`
+	ConfirmationToken  sql.NullString `json:"confirmation_token"`
+	IsConfirmed        sql.NullBool   `json:"is_confirmed"`
+	Bio                sql.NullString `json:"bio"`
+	ProfileImageUrl    sql.NullString `json:"profile_image_url"`
+	BackgroundImageUrl sql.NullString `json:"background_image_url"`
 }

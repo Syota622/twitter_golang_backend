@@ -19,7 +19,7 @@ func SetupRouter(envConfig EnvConfig) *gin.Engine {
 	corsConfig := cors.New(cors.Options{
 		AllowedOrigins:   []string{envConfig.FrontendURL},                                         // ReactアプリのURLを許可
 		AllowCredentials: true,                                                                    // クッキーを許可
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},                                      // 許可するHTTPメソッド
+		AllowedMethods:   []string{"GET", "POST", "PUT", "OPTIONS"},                               // 許可するHTTPメソッド
 		AllowedHeaders:   []string{"Content-Type", "Accept", "Authorization", "X-Requested-With"}, // 許可するHTTPヘッダー
 	})
 	// GolangのrouterにCORSミドルウェアを使用
@@ -41,10 +41,10 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	ctx := context.Background()
 
 	// ルートの設定
-	router.POST("/signup", api.SignupHandler(queryHandler))
-	router.GET("/confirm", api.ConfirmEmailHandler(queryHandler))
-	router.POST("/login", api.LoginHandler(queryHandler, rdb, ctx))
-	router.GET("/tweets/:id", api.GetTweetDetailHandler(queryHandler))
+	router.POST("/signup", api.SignupHandler(queryHandler))            // ユーザー登録
+	router.GET("/confirm", api.ConfirmEmailHandler(queryHandler))      // メールアドレスの確認
+	router.POST("/login", api.LoginHandler(queryHandler, rdb, ctx))    // ログイン
+	router.GET("/tweets/:id", api.GetTweetDetailHandler(queryHandler)) // 特定(1つ)のツイートIDに対する詳細情報を取得
 	router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello World")
 	})
@@ -55,6 +55,9 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	authGroup.Use(AuthMiddleware(rdb)) // 認証のミドルウェアを設定
 
 	// ルートの設定
-	authGroup.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler))
-	authGroup.GET("/tweets", api.GetAllTweetsHandler(queryHandler))
+	authGroup.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler))        // ツイート登録
+	authGroup.GET("/tweets", api.GetAllTweetsHandler(queryHandler))                // 前ユーザーのツイートリストを取得
+	authGroup.GET("/user/:userId", api.GetUserProfileHandler(queryHandler))        // ユーザープロフィールを取得
+	authGroup.PUT("/user/profile", api.UpdateUserProfileHandler(queryHandler))     // プロフィールを更新
+	authGroup.GET("/users/:userId/tweets", api.GetUserTweetsHandler(queryHandler)) // 特定のユーザーのツイートリストを取得
 }

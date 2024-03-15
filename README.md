@@ -25,7 +25,7 @@ docker compose down --rmi all --volumes --remove-orphans
 make migrate-create NAME={ TABLE_NAME }
 make migrate-create NAME=create_users2
 ## マイグレーションの実行(VERSIONを指定するとそのバージョンまで実行する)
-make migrate-up
+
 make migrate-up VERSION="1"
 ## マイグレーションのロールバック(VERSIONを指定するとそのバージョンまでロールバックする)
 make migrate-down

@@ -14,6 +14,7 @@ func CreateTweetWithImageHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// ユーザーIDの取得
 		userID, exists := c.Get("userID")
+		println("userID: ", userID)
 		if !exists {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "認証が必要です"})
 			return
