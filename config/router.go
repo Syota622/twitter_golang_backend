@@ -19,7 +19,7 @@ func SetupRouter(envConfig EnvConfig) *gin.Engine {
 	corsConfig := cors.New(cors.Options{
 		AllowedOrigins:   []string{envConfig.FrontendURL},                                         // ReactアプリのURLを許可
 		AllowCredentials: true,                                                                    // クッキーを許可
-		AllowedMethods:   []string{"GET", "POST", "PUT", "OPTIONS"},                               // 許可するHTTPメソッド
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},                     // 許可するHTTPメソッド
 		AllowedHeaders:   []string{"Content-Type", "Accept", "Authorization", "X-Requested-With"}, // 許可するHTTPヘッダー
 	})
 	// GolangのrouterにCORSミドルウェアを使用
@@ -60,5 +60,5 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	authGroup.GET("/user/:userId", api.GetUserProfileHandler(queryHandler))        // ユーザープロフィールを取得
 	authGroup.PUT("/user/profile", api.UpdateUserProfileHandler(queryHandler))     // プロフィールを更新
 	authGroup.GET("/users/:userId/tweets", api.GetUserTweetsHandler(queryHandler)) // 特定のユーザーのツイートリストを取得
-	authGroup.DELETE("/tweet/:id", api.DeleteTweetHandler(queryHandler))           // ツイート削除
+	authGroup.DELETE("/tweet/:tweetId", api.DeleteTweetHandler(queryHandler))      // ツイート削除
 }
