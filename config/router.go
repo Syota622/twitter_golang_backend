@@ -61,4 +61,5 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	authGroup.PUT("/user/profile", api.UpdateUserProfileHandler(queryHandler))     // プロフィールを更新
 	authGroup.GET("/users/:userId/tweets", api.GetUserTweetsHandler(queryHandler)) // 特定のユーザーのツイートリストを取得
 	authGroup.DELETE("/tweet/:tweetId", api.DeleteTweetHandler(queryHandler))      // ツイート削除
+	authGroup.POST("/comment", api.CreateCommentHandler(queryHandler))             // コメント登録
 }
