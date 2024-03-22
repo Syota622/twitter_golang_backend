@@ -37,3 +37,25 @@ func CreateCommentHandler(db *generated.Queries) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"comment": newComment})
 	}
 }
+
+// GetCommentsHandler は指定されたツイートIDに関連するすべてのコメントを取得するハンドラ
+func GetCommentsHandler(db *generated.Queries) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// リクエストから必要なパラメータを取得
+		tweetID, err := strconv.Atoi(c.Param("tweetId"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ツイートIDが無効です"})
+			return
+		}
+
+		// データベースからコメントを取得
+		comments, err := db.GetCommentsByTweetID(c, int32(tweetID))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "コメントの取得に失敗しました"})
+			return
+		}
+
+		// 成功した場合はコメントのリストを含むレスポンスを返す
+		c.JSON(http.StatusOK, gin.H{"comments": comments})
+	}
+}
