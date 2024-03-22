@@ -59,3 +59,25 @@ func GetCommentsHandler(db *generated.Queries) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"comments": comments})
 	}
 }
+
+// DeleteCommentHandler は指定されたコメントIDを持つコメントを削除するハンドラ
+func DeleteCommentHandler(db *generated.Queries) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// リクエストから必要なパラメータを取得
+		commentID, err := strconv.Atoi(c.Param("commentId"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "コメントIDが無効です"})
+			return
+		}
+
+		// データベースからコメントを削除
+		err = db.DeleteComment(c, int32(commentID))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "コメントの削除に失敗しました"})
+			return
+		}
+
+		// 成功した場合はステータスコード200を返す
+		c.JSON(http.StatusOK, gin.H{"message": "コメントが正常に削除されました"})
+	}
+}
