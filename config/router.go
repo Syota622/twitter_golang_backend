@@ -55,12 +55,13 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	authGroup.Use(AuthMiddleware(rdb)) // 認証のミドルウェアを設定
 
 	// ルートの設定
-	authGroup.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler))        // ツイート登録
-	authGroup.GET("/tweets", api.GetAllTweetsHandler(queryHandler))                // 前ユーザーのツイートリストを取得
-	authGroup.GET("/user/:userId", api.GetUserProfileHandler(queryHandler))        // ユーザープロフィールを取得
-	authGroup.PUT("/user/profile", api.UpdateUserProfileHandler(queryHandler))     // プロフィールを更新
-	authGroup.GET("/users/:userId/tweets", api.GetUserTweetsHandler(queryHandler)) // 特定のユーザーのツイートリストを取得
-	authGroup.DELETE("/tweet/:tweetId", api.DeleteTweetHandler(queryHandler))      // ツイート削除
-	authGroup.POST("/comment", api.CreateCommentHandler(queryHandler))             // コメント登録
-	authGroup.GET("/comments/:tweetId", api.GetCommentsHandler(queryHandler))      // 特定のツイートIDに対するコメントを取得
+	authGroup.POST("/tweet", api.CreateTweetWithImageHandler(queryHandler))         // ツイート登録
+	authGroup.GET("/tweets", api.GetAllTweetsHandler(queryHandler))                 // 前ユーザーのツイートリストを取得
+	authGroup.GET("/user/:userId", api.GetUserProfileHandler(queryHandler))         // ユーザープロフィールを取得
+	authGroup.PUT("/user/profile", api.UpdateUserProfileHandler(queryHandler))      // プロフィールを更新
+	authGroup.GET("/users/:userId/tweets", api.GetUserTweetsHandler(queryHandler))  // 特定のユーザーのツイートリストを取得
+	authGroup.DELETE("/tweet/:tweetId", api.DeleteTweetHandler(queryHandler))       // ツイート削除
+	authGroup.POST("/comment", api.CreateCommentHandler(queryHandler))              // コメント登録
+	authGroup.GET("/comments/:tweetId", api.GetCommentsHandler(queryHandler))       // 特定のツイートIDに対するコメントを取得
+	authGroup.DELETE("/comment/:commentId", api.DeleteCommentHandler(queryHandler)) // コメント削除
 }
