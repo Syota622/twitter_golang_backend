@@ -9,6 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type GetAllTweetsResponse struct {
+	generated.GetAllTweetsRow
+	RetweetCount int64 `json:"retweet_count"`
+}
+
 // CreateTweetWithImageHandler はツイートを投稿するためのハンドラ
 func CreateTweetWithImageHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -89,8 +94,17 @@ func GetAllTweetsHandler(db *generated.Queries) gin.HandlerFunc {
 			return
 		}
 
+		// レスポンス用のスライスを作成
+		response := make([]GetAllTweetsResponse, len(tweets))
+		for i, tweet := range tweets {
+			response[i] = GetAllTweetsResponse{
+				GetAllTweetsRow: tweet,
+				RetweetCount:    tweet.RetweetCount,
+			}
+		}
+
 		// 成功した場合はツイートのリストを含むレスポンスを返す
-		c.JSON(http.StatusOK, gin.H{"tweets": tweets})
+		c.JSON(http.StatusOK, gin.H{"tweets": response})
 	}
 }
 

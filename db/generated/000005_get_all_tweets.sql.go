@@ -7,12 +7,21 @@ package generated
 
 import (
 	"context"
+	"database/sql"
 )
 
 const getAllTweets = `-- name: GetAllTweets :many
-SELECT id, user_id, message, created_at, updated_at, image_url
-FROM tweets
-ORDER BY created_at DESC
+SELECT 
+    tweets.id, tweets.user_id, tweets.message, tweets.created_at, tweets.updated_at, tweets.image_url,
+    COUNT(retweets.id) AS retweet_count
+FROM 
+    tweets 
+LEFT JOIN 
+    retweets ON tweets.id = retweets.tweet_id
+GROUP BY 
+    tweets.id
+ORDER BY 
+    tweets.updated_at DESC
 LIMIT $1 OFFSET $2
 `
 
@@ -21,15 +30,25 @@ type GetAllTweetsParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetAllTweets(ctx context.Context, arg GetAllTweetsParams) ([]Tweet, error) {
+type GetAllTweetsRow struct {
+	ID           int32          `json:"id"`
+	UserID       int32          `json:"user_id"`
+	Message      string         `json:"message"`
+	CreatedAt    sql.NullTime   `json:"created_at"`
+	UpdatedAt    sql.NullTime   `json:"updated_at"`
+	ImageUrl     sql.NullString `json:"image_url"`
+	RetweetCount int64          `json:"retweet_count"`
+}
+
+func (q *Queries) GetAllTweets(ctx context.Context, arg GetAllTweetsParams) ([]GetAllTweetsRow, error) {
 	rows, err := q.db.QueryContext(ctx, getAllTweets, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Tweet
+	var items []GetAllTweetsRow
 	for rows.Next() {
-		var i Tweet
+		var i GetAllTweetsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
@@ -37,6 +56,7 @@ func (q *Queries) GetAllTweets(ctx context.Context, arg GetAllTweetsParams) ([]T
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ImageUrl,
+			&i.RetweetCount,
 		); err != nil {
 			return nil, err
 		}
