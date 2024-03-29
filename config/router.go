@@ -64,4 +64,5 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	authGroup.POST("/comment", api.CreateCommentHandler(queryHandler))              // コメント登録
 	authGroup.GET("/comments/:tweetId", api.GetCommentsHandler(queryHandler))       // 特定のツイートIDに対するコメントを取得
 	authGroup.DELETE("/comment/:commentId", api.DeleteCommentHandler(queryHandler)) // コメント削除
+	authGroup.POST("/retweet/:tweetId", api.CreateRetweetHandler(queryHandler))     // リツイート登録
 }
