@@ -10,9 +10,7 @@ import (
 )
 
 const createLike = `-- name: CreateLike :one
-INSERT INTO likes (user_id, tweet_id)
-VALUES ($1, $2)
-RETURNING id, user_id, tweet_id, created_at, updated_at
+INSERT INTO likes (user_id, tweet_id) VALUES ($1, $2) RETURNING id, user_id, tweet_id, created_at, updated_at
 `
 
 type CreateLikeParams struct {

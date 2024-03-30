@@ -12,6 +12,7 @@ import (
 type GetAllTweetsResponse struct {
 	generated.GetAllTweetsRow
 	RetweetCount int64 `json:"retweet_count"`
+	LikeCount    int64 `json:"like_count"`
 }
 
 // CreateTweetWithImageHandler はツイートを投稿するためのハンドラ
@@ -100,6 +101,7 @@ func GetAllTweetsHandler(db *generated.Queries) gin.HandlerFunc {
 			response[i] = GetAllTweetsResponse{
 				GetAllTweetsRow: tweet,
 				RetweetCount:    tweet.RetweetCount,
+				LikeCount:       tweet.LikeCount,
 			}
 		}
 
