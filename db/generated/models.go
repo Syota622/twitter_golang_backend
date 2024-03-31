@@ -6,6 +6,7 @@ package generated
 
 import (
 	"database/sql"
+	"time"
 )
 
 type Comment struct {
@@ -14,6 +15,13 @@ type Comment struct {
 	Comment   string       `json:"comment"`
 	CreatedAt sql.NullTime `json:"created_at"`
 	UpdatedAt sql.NullTime `json:"updated_at"`
+}
+
+type Retweet struct {
+	ID        int32     `json:"id"`
+	UserID    int32     `json:"user_id"`
+	TweetID   int32     `json:"tweet_id"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Tweet struct {
