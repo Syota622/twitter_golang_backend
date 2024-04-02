@@ -1,13 +1,16 @@
 -- name: GetAllTweets :many
 SELECT 
     tweets.*,
-    COUNT(retweets.id) AS retweet_count
+    COALESCE(retweet_counts.count, 0) AS retweet_count,
+    COALESCE(like_counts.count, 0) AS like_count
 FROM 
     tweets 
 LEFT JOIN 
-    retweets ON tweets.id = retweets.tweet_id
-GROUP BY 
-    tweets.id
+    (SELECT tweet_id, COUNT(*) AS count FROM retweets GROUP BY tweet_id) AS retweet_counts
+    ON tweets.id = retweet_counts.tweet_id
+LEFT JOIN 
+    (SELECT tweet_id, COUNT(*) AS count FROM likes GROUP BY tweet_id) AS like_counts
+    ON tweets.id = like_counts.tweet_id
 ORDER BY 
     tweets.updated_at DESC
 LIMIT $1 OFFSET $2;
