@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"log"
 	"net/http"
 	"strconv"
 	"twitter_golang_backend/db/generated" // sqlcで生成されたパッケージをインポート
@@ -40,7 +39,7 @@ func CreateLikeHandler(db *generated.Queries) gin.HandlerFunc {
 
 		// ツイートを取得
 		tweet, err := db.GetTweetByID(c, int32(tweetID))
-		log.Println("tweet: ", tweet)
+
 		if err != nil {
 			// ツイートが見つからない場合はエラーを返す
 			c.JSON(http.StatusNotFound, gin.H{"error": "ツイートが見つかりません"})
