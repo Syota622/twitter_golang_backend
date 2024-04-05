@@ -17,6 +17,7 @@ func CreateCommentHandler(db *generated.Queries) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "ツイートIDが無効です"})
 			return
 		}
+		// リクエストからコメントを取得
 		comment := c.PostForm("comment")
 		if comment == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "コメントが空です"})
