@@ -68,4 +68,5 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	authGroup.POST("/like/:tweetId", api.CreateLikeHandler(queryHandler))                 // いいね登録
 	authGroup.POST("/follow/:followId", api.CreateFollowHandler(queryHandler))            // フォロー登録
 	authGroup.GET("/follow/:followId/is-following", api.IsFollowingHandler(queryHandler)) // フォロー状態を確認
+	authGroup.DELETE("/unfollow/:unfollowId", api.UnfollowHandler(queryHandler))          // フォロー解除
 }
