@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 	"twitter_golang_backend/db/generated" // sqlcで生成されたパッケージをインポート
@@ -17,6 +18,14 @@ func CreateCommentHandler(db *generated.Queries) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "ツイートIDが無効です"})
 			return
 		}
+
+		// ツイートの詳細を取得
+		tweet, err := db.GetTweetByID(c, int32(tweetID))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "ツイートの取得に失敗しました"})
+			return
+		}
+
 		// リクエストからコメントを取得
 		comment := c.PostForm("comment")
 		if comment == "" {
@@ -24,14 +33,31 @@ func CreateCommentHandler(db *generated.Queries) gin.HandlerFunc {
 			return
 		}
 
+		// リクエストからユーザーIDを取得
+		userID := c.MustGet("userID").(int)
+
 		// データベースに新しいコメントを作成
 		newComment, err := db.CreateComment(c, generated.CreateCommentParams{
-			TweetID: int32(tweetID),
+			TweetID: tweet.ID,
 			Comment: comment,
 		})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "コメントの作成に失敗しました"})
 			return
+		}
+
+		// 新しい通知を作成
+		notificationParams := generated.CreateNotificationParams{
+			UserID:       tweet.UserID,                                          // 通知を受け取るユーザーID
+			NotifiedByID: int32(userID),                                         // 通知を送るユーザーID
+			Type:         "comment",                                             // 通知のタイプ
+			PostID:       sql.NullInt32{Int32: newComment.TweetID, Valid: true}, // コメントされたツイートID
+			CommentID:    sql.NullInt32{Int32: newComment.ID, Valid: true},      // 新しいコメントID
+		}
+		_, err = db.CreateNotification(c, notificationParams)
+		if err != nil {
+			// 通知の作成に失敗した場合でも、コメントの作成は続行されます
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "通知の作成に失敗しました"})
 		}
 
 		// 成功した場合は新しいコメントの詳細を含むレスポンスを返す
