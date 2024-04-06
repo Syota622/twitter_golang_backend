@@ -17,6 +17,14 @@ type Comment struct {
 	UpdatedAt sql.NullTime `json:"updated_at"`
 }
 
+type Follow struct {
+	ID        int32     `json:"id"`
+	UserID    int32     `json:"user_id"`
+	FollowID  int32     `json:"follow_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type Like struct {
 	ID        int32     `json:"id"`
 	UserID    int32     `json:"user_id"`

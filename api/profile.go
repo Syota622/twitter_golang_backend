@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"strconv"
 	"twitter_golang_backend/db/generated" // このパスはプロジェクトによって異なる
 
 	"github.com/gin-gonic/gin"
@@ -20,23 +21,16 @@ type UpdateUserProfileRequest struct {
 // GetUserProfileHandler はユーザープロフィールのハンドラーです
 func GetUserProfileHandler(queries *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// ユーザーIDの取得
-		userID, exists := c.Get("userID")
-		if !exists {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "認証が必要です"})
-			return
-		}
-
-		// userIDの型アサーション
-		userIDInt, ok := userID.(int)
-		if !ok {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "サーバー内部エラー"})
-			return
-		}
-
-		user, err := queries.GetUserByID(c, int32(userIDInt))
+		// URLパラメータからユーザーIDを取得
+		userID, err := strconv.Atoi(c.Param("userId"))
 		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "無効なユーザーID"})
+			return
+		}
+
+		user, err := queries.GetUserByID(c, int32(userID))
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "ユーザーが見つかりませんでした"})
 			return
 		}
 

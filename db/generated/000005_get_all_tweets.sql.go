@@ -13,10 +13,13 @@ import (
 const getAllTweets = `-- name: GetAllTweets :many
 SELECT 
     tweets.id, tweets.user_id, tweets.message, tweets.created_at, tweets.updated_at, tweets.image_url,
+    users.username,
     COALESCE(retweet_counts.count, 0) AS retweet_count,
     COALESCE(like_counts.count, 0) AS like_count
 FROM 
     tweets 
+JOIN 
+    users ON tweets.user_id = users.id
 LEFT JOIN 
     (SELECT tweet_id, COUNT(*) AS count FROM retweets GROUP BY tweet_id) AS retweet_counts
     ON tweets.id = retweet_counts.tweet_id
@@ -40,6 +43,7 @@ type GetAllTweetsRow struct {
 	CreatedAt    sql.NullTime   `json:"created_at"`
 	UpdatedAt    sql.NullTime   `json:"updated_at"`
 	ImageUrl     sql.NullString `json:"image_url"`
+	Username     string         `json:"username"`
 	RetweetCount int64          `json:"retweet_count"`
 	LikeCount    int64          `json:"like_count"`
 }
@@ -60,6 +64,7 @@ func (q *Queries) GetAllTweets(ctx context.Context, arg GetAllTweetsParams) ([]G
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ImageUrl,
+			&i.Username,
 			&i.RetweetCount,
 			&i.LikeCount,
 		); err != nil {
