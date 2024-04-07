@@ -54,3 +54,25 @@ func CreateNotificationHandler(db *generated.Queries) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"notification": notification})
 	}
 }
+
+// GetNotificationsHandler はユーザーの通知のリストを取得するハンドラ
+func GetNotificationsHandler(db *generated.Queries) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// リクエストからユーザーIDを取得
+		userID, exists := c.Get("userID")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "認証が必要です"})
+			return
+		}
+
+		// データベースから通知を取得
+		notifications, err := db.GetNotificationsByUserID(c, int32(userID.(int)))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "通知の取得に失敗しました"})
+			return
+		}
+
+		// 成功した場合は通知のリストを含むレスポンスを返す
+		c.JSON(http.StatusOK, gin.H{"notifications": notifications})
+	}
+}
