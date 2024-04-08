@@ -33,6 +33,17 @@ type Like struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type Notification struct {
+	ID           int32         `json:"id"`
+	UserID       int32         `json:"user_id"`
+	NotifiedByID int32         `json:"notified_by_id"`
+	Type         string        `json:"type"`
+	PostID       sql.NullInt32 `json:"post_id"`
+	CommentID    sql.NullInt32 `json:"comment_id"`
+	CreatedAt    sql.NullTime  `json:"created_at"`
+	UpdatedAt    sql.NullTime  `json:"updated_at"`
+}
+
 type Retweet struct {
 	ID        int32     `json:"id"`
 	UserID    int32     `json:"user_id"`

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 	"twitter_golang_backend/db/generated"
@@ -34,6 +35,19 @@ func CreateFollowHandler(db *generated.Queries) gin.HandlerFunc {
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "フォローに失敗しました"})
 			return
+		}
+
+		// 新しい通知を作成
+		notificationParams := generated.CreateNotificationParams{
+			UserID:       follow.FollowID,                       // 通知を受け取るユーザーID
+			NotifiedByID: follow.UserID,                         // 通知を送るユーザーID
+			Type:         "follow",                              // 通知のタイプ
+			PostID:       sql.NullInt32{Int32: 0, Valid: false}, // フォローにはツイートIDは関連付けられていない
+		}
+		_, err = db.CreateNotification(c, notificationParams)
+		if err != nil {
+			// 通知の作成に失敗した場合でも、フォローの作成は続行されます
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "通知の作成に失敗しました"})
 		}
 
 		c.JSON(http.StatusOK, gin.H{"follow": follow})
