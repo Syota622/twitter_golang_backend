@@ -69,12 +69,8 @@ func GetAllGroupsHandler(db *generated.Queries) gin.HandlerFunc {
 // GetGroupMessagesHandler は特定のグループのメッセージ一覧を取得するためのハンドラ
 func GetGroupMessagesHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		groupID, err := strconv.ParseInt(c.Param("group_id"), 10, 64)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		messages, err := db.GetGroupMessages(sql.NullInt32{Int32: int32(groupID), Valid: groupID != 0})
+		groupID, _ := strconv.ParseInt(c.Param("groupId"), 10, 32)
+		messages, err := db.GetGroupMessages(c, sql.NullInt32{Int32: int32(groupID), Valid: groupID != 0})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
