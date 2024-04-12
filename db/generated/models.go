@@ -25,6 +25,19 @@ type Follow struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type Group struct {
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
+}
+
+type GroupMessage struct {
+	ID        int32         `json:"id"`
+	GroupID   sql.NullInt32 `json:"group_id"`
+	UserID    int32         `json:"user_id"`
+	Message   string        `json:"message"`
+	CreatedAt time.Time     `json:"created_at"`
+}
+
 type Like struct {
 	ID        int32     `json:"id"`
 	UserID    int32     `json:"user_id"`

@@ -70,4 +70,8 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	authGroup.GET("/follow/:followId/is-following", api.IsFollowingHandler(queryHandler)) // フォロー状態を確認
 	authGroup.DELETE("/unfollow/:unfollowId", api.UnfollowHandler(queryHandler))          // フォロー解除
 	authGroup.GET("/notifications", api.GetNotificationsHandler(queryHandler))            // 通知登録
+	authGroup.POST("/group", api.CreateGroupHandler(queryHandler))                        // グループ登録
+	authGroup.GET("/groups", api.GetAllGroupsHandler(queryHandler))                       // 全てのグループを取得
+	authGroup.POST("/group-message", api.CreateGroupMessageHandler(queryHandler))         // グループメッセージ登録
+	authGroup.GET("/group-messages/:groupId", api.GetGroupMessagesHandler(queryHandler))  // 特定のグループIDに対するメッセージを取得
 }
