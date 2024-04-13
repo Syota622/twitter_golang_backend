@@ -42,18 +42,21 @@ func CreateGroupMessageHandler(db *generated.Queries) gin.HandlerFunc {
 			return
 		}
 
+		// Javascriptから送信されるデータは文字列型なので、数値型に変換
 		groupID, err := strconv.ParseInt(req.GroupID, 10, 64)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid group_id"})
 			return
 		}
 
+		// Javascriptから送信されるデータは文字列型なので、数値型に変換
 		userID, err := strconv.ParseInt(req.UserID, 10, 64)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user_id"})
 			return
 		}
 
+		// グループメッセージを作成
 		params := generated.CreateGroupMessageParams{
 			GroupID: sql.NullInt32{Int32: int32(groupID), Valid: groupID != 0},
 			UserID:  int32(userID),
