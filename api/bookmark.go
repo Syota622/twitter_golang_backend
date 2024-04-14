@@ -31,7 +31,7 @@ func CreateBookmarkHandler(db *generated.Queries) gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"status": "success"})
+		c.JSON(http.StatusOK, gin.H{"status": "ブックマークの作成に成功しました"})
 	}
 }
 
@@ -40,7 +40,7 @@ func ListBookmarksHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID, err := strconv.ParseInt(c.Param("userId"), 10, 32)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ユーザーIDが無効です"})
 			return
 		}
 
@@ -51,5 +51,32 @@ func ListBookmarksHandler(db *generated.Queries) gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, bookmarks)
+	}
+}
+
+// DeleteBookmarkHandler はブックマークを削除するためのハンドラ
+func DeleteBookmarkHandler(db *generated.Queries) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var req struct {
+			UserID  int32 `json:"user_id"`
+			TweetID int32 `json:"tweet_id"`
+		}
+		if err := c.BindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		params := generated.DeleteBookmarkParams{
+			UserID:  req.UserID,
+			TweetID: req.TweetID,
+		}
+
+		// ブックマークを削除
+		err := db.DeleteBookmark(c, params)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"status": "ブックマークの削除に成功しました"})
 	}
 }
