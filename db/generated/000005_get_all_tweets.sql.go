@@ -15,7 +15,8 @@ SELECT
     tweets.id, tweets.user_id, tweets.message, tweets.created_at, tweets.updated_at, tweets.image_url,
     users.username,
     COALESCE(retweet_counts.count, 0) AS retweet_count,
-    COALESCE(like_counts.count, 0) AS like_count
+    COALESCE(like_counts.count, 0) AS like_count,
+    CASE WHEN bookmarks.tweet_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_bookmarked
 FROM 
     tweets 
 JOIN 
@@ -26,6 +27,8 @@ LEFT JOIN
 LEFT JOIN 
     (SELECT tweet_id, COUNT(*) AS count FROM likes GROUP BY tweet_id) AS like_counts
     ON tweets.id = like_counts.tweet_id
+LEFT JOIN 
+    bookmarks ON tweets.id = bookmarks.tweet_id AND bookmarks.user_id = $3
 ORDER BY 
     tweets.updated_at DESC
 LIMIT $1 OFFSET $2
@@ -34,6 +37,7 @@ LIMIT $1 OFFSET $2
 type GetAllTweetsParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
+	UserID int32 `json:"user_id"`
 }
 
 type GetAllTweetsRow struct {
@@ -46,10 +50,11 @@ type GetAllTweetsRow struct {
 	Username     string         `json:"username"`
 	RetweetCount int64          `json:"retweet_count"`
 	LikeCount    int64          `json:"like_count"`
+	IsBookmarked bool           `json:"is_bookmarked"`
 }
 
 func (q *Queries) GetAllTweets(ctx context.Context, arg GetAllTweetsParams) ([]GetAllTweetsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getAllTweets, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, getAllTweets, arg.Limit, arg.Offset, arg.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -67,6 +72,7 @@ func (q *Queries) GetAllTweets(ctx context.Context, arg GetAllTweetsParams) ([]G
 			&i.Username,
 			&i.RetweetCount,
 			&i.LikeCount,
+			&i.IsBookmarked,
 		); err != nil {
 			return nil, err
 		}

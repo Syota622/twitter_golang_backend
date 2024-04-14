@@ -75,5 +75,4 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	authGroup.POST("/group-message", api.CreateGroupMessageHandler(queryHandler))         // グループメッセージ登録
 	authGroup.GET("/group-messages/:groupId", api.GetGroupMessagesHandler(queryHandler))  // 特定のグループIDに対するメッセージを取得
 	authGroup.POST("/bookmark", api.CreateBookmarkHandler(queryHandler))                  // ブックマーク追加
-	authGroup.GET("/bookmarks/:userId", api.ListBookmarksHandler(queryHandler))           // ブックマーク一覧取得
 }
