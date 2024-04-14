@@ -1,0 +1,6 @@
+CREATE TABLE bookmarks (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    tweet_id INT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
