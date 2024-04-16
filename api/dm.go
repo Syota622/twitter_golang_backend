@@ -33,8 +33,6 @@ func CreateGroupHandler(db *generated.Queries) gin.HandlerFunc {
 func CreateGroupMessageHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
-			GroupID string `json:"group_id"`
-			UserID  string `json:"user_id"`
 			Message string `json:"message"`
 		}
 		if err := c.BindJSON(&req); err != nil {
@@ -42,27 +40,27 @@ func CreateGroupMessageHandler(db *generated.Queries) gin.HandlerFunc {
 			return
 		}
 
-		// Javascriptから送信されるデータは文字列型なので、数値型に変換
-		groupID, err := strconv.ParseInt(req.GroupID, 10, 64)
+		// URLパラメータからgroup_idを取得
+		groupID, err := strconv.ParseInt(c.Param("groupId"), 10, 64)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid group_id"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "グループIDが無効です"})
 			return
 		}
 
-		// Javascriptから送信されるデータは文字列型なので、数値型に変換
-		userID, err := strconv.ParseInt(req.UserID, 10, 64)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user_id"})
+		// コンテキストからuserIDを取得
+		userID, exists := c.Get("userID")
+		if !exists {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ユーザーIDが無効です"})
 			return
 		}
 
 		// グループメッセージを作成
-		params := generated.CreateGroupMessageParams{
+		params := generated.CreateMessageParams{
 			GroupID: sql.NullInt32{Int32: int32(groupID), Valid: groupID != 0},
-			UserID:  int32(userID),
+			UserID:  int32(userID.(int)), // userIDをint型にキャスト
 			Message: req.Message,
 		}
-		message, err := db.CreateGroupMessage(c, params)
+		message, err := db.CreateMessage(c, params)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -84,12 +82,19 @@ func GetAllGroupsHandler(db *generated.Queries) gin.HandlerFunc {
 	}
 }
 
-// GetGroupMessagesHandler は特定のグループのメッセージ一覧を取得するためのハンドラ
+// GetGroupMessagesHandler は特定のグループIDに対するメッセージを取得するためのハンドラ
 func GetGroupMessagesHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// URLパラメータからgroup_idを取得
+		groupID, err := strconv.ParseInt(c.Param("groupId"), 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "グループIDが無効です"})
+			return
+		}
+
 		// 特定のグループIDに対するメッセージを取得
-		groupID, _ := strconv.ParseInt(c.Param("groupId"), 10, 32)
-		messages, err := db.GetGroupMessages(c, sql.NullInt32{Int32: int32(groupID), Valid: groupID != 0})
+		params := sql.NullInt32{Int32: int32(groupID), Valid: groupID != 0}
+		messages, err := db.GetMessages(c, params)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
