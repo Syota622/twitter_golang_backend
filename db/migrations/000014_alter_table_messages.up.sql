@@ -1,1 +1,0 @@
-ALTER TABLE group_messages RENAME TO messages;
