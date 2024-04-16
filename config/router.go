@@ -55,25 +55,25 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	authGroup.Use(AuthMiddleware(rdb)) // 認証のミドルウェアを設定
 
 	// ルートの設定
-	authGroup.POST("/tweets", api.CreateTweetWithImageHandler(queryHandler))                // ツイート登録
-	authGroup.GET("/tweets", api.GetAllTweetsHandler(queryHandler))                         // 前ユーザーのツイートリストを取得
-	authGroup.DELETE("/tweet/:tweetId", api.DeleteTweetHandler(queryHandler))               // ツイート削除
-	authGroup.GET("/user/:userId", api.GetUserProfileHandler(queryHandler))                 // ユーザープロフィールを取得
-	authGroup.PUT("/user/profile", api.UpdateUserProfileHandler(queryHandler))              // プロフィールを更新
-	authGroup.GET("/users/:userId/tweets", api.GetUserTweetsHandler(queryHandler))          // 特定のユーザーのツイートリストを取得
-	authGroup.POST("/comments", api.CreateCommentHandler(queryHandler))                     // コメント登録
-	authGroup.GET("/comments/:tweetId", api.GetCommentsHandler(queryHandler))               // 特定のツイートIDに対するコメントを取得
-	authGroup.DELETE("/comment/:commentId", api.DeleteCommentHandler(queryHandler))         // コメント削除
-	authGroup.POST("/retweet/:tweetId", api.CreateRetweetHandler(queryHandler))             // リツイート登録
-	authGroup.POST("/like/:tweetId", api.CreateLikeHandler(queryHandler))                   // いいね登録
-	authGroup.POST("/follow/:followId", api.CreateFollowHandler(queryHandler))              // フォロー登録
-	authGroup.GET("/follow/:followId/is-following", api.IsFollowingHandler(queryHandler))   // フォロー状態を確認
-	authGroup.DELETE("/unfollow/:unfollowId", api.UnfollowHandler(queryHandler))            // フォロー解除
-	authGroup.GET("/notifications", api.GetNotificationsHandler(queryHandler))              // 通知登録
-	authGroup.POST("/groups", api.CreateGroupHandler(queryHandler))                         // グループ登録
-	authGroup.GET("/groups", api.GetAllGroupsHandler(queryHandler))                         // 全てのグループを取得
-	authGroup.POST("/group/:groupId/messages", api.CreateGroupMessageHandler(queryHandler)) // グループメッセージ登録
-	authGroup.GET("/group/:groupId/messages", api.GetGroupMessagesHandler(queryHandler))    // 特定のグループIDに対するメッセージを取得
-	authGroup.POST("/bookmark", api.CreateBookmarkHandler(queryHandler))                    // ブックマーク追加
-	authGroup.DELETE("/bookmark", api.DeleteBookmarkHandler(queryHandler))                  // ブックマーク削除
+	authGroup.POST("/tweets", api.CreateTweetWithImageHandler(queryHandler))              // ツイート登録
+	authGroup.GET("/tweets", api.GetAllTweetsHandler(queryHandler))                       // 前ユーザーのツイートリストを取得
+	authGroup.DELETE("/tweet/:tweetId", api.DeleteTweetHandler(queryHandler))             // ツイート削除
+	authGroup.GET("/user/:userId", api.GetUserProfileHandler(queryHandler))               // ユーザープロフィールを取得
+	authGroup.PUT("/user/profile", api.UpdateUserProfileHandler(queryHandler))            // プロフィールを更新
+	authGroup.GET("/users/:userId/tweets", api.GetUserTweetsHandler(queryHandler))        // 特定のユーザーのツイートリストを取得
+	authGroup.POST("/comments", api.CreateCommentHandler(queryHandler))                   // コメント登録
+	authGroup.GET("/comments/:tweetId", api.GetCommentsHandler(queryHandler))             // 特定のツイートIDに対するコメントを取得
+	authGroup.DELETE("/comment/:commentId", api.DeleteCommentHandler(queryHandler))       // コメント削除
+	authGroup.POST("/retweet/:tweetId", api.CreateRetweetHandler(queryHandler))           // リツイート登録
+	authGroup.POST("/like/:tweetId", api.CreateLikeHandler(queryHandler))                 // いいね登録
+	authGroup.POST("/follow/:followId", api.CreateFollowHandler(queryHandler))            // フォロー登録
+	authGroup.GET("/follow/:followId/is-following", api.IsFollowingHandler(queryHandler)) // フォロー状態を確認
+	authGroup.DELETE("/unfollow/:unfollowId", api.UnfollowHandler(queryHandler))          // フォロー解除
+	authGroup.GET("/notifications", api.GetNotificationsHandler(queryHandler))            // 通知登録
+	authGroup.POST("/groups", api.CreateGroupHandler(queryHandler))                       // グループ登録
+	authGroup.GET("/groups", api.GetAllGroupsHandler(queryHandler))                       // 全てのグループを取得
+	authGroup.POST("/group/:groupId/messages", api.CreateMessageHandler(queryHandler))    // グループメッセージ登録
+	authGroup.GET("/group/:groupId/messages", api.GetMessagesHandler(queryHandler))       // 特定のグループIDに対するメッセージを取得
+	authGroup.POST("/bookmark", api.CreateBookmarkHandler(queryHandler))                  // ブックマーク追加
+	authGroup.DELETE("/bookmark", api.DeleteBookmarkHandler(queryHandler))                // ブックマーク削除
 }

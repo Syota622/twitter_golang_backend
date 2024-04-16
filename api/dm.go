@@ -30,7 +30,7 @@ func CreateGroupHandler(db *generated.Queries) gin.HandlerFunc {
 }
 
 // CreateGroupMessageHandler は新しいグループメッセージを作成するためのハンドラ
-func CreateGroupMessageHandler(db *generated.Queries) gin.HandlerFunc {
+func CreateMessageHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
 			Message string `json:"message"`
@@ -83,7 +83,7 @@ func GetAllGroupsHandler(db *generated.Queries) gin.HandlerFunc {
 }
 
 // GetGroupMessagesHandler は特定のグループIDに対するメッセージを取得するためのハンドラ
-func GetGroupMessagesHandler(db *generated.Queries) gin.HandlerFunc {
+func GetMessagesHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// URLパラメータからgroup_idを取得
 		groupID, err := strconv.ParseInt(c.Param("groupId"), 10, 64)
