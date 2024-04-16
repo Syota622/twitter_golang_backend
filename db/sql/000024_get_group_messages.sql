@@ -1,4 +1,4 @@
 -- name: GetGroupMessages :many
-SELECT * FROM group_messages
+SELECT * FROM messages
 WHERE group_id = $1
 ORDER BY created_at DESC;
