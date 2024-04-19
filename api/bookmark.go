@@ -12,7 +12,6 @@ import (
 func CreateBookmarkHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
-			UserID  int32 `json:"user_id"`
 			TweetID int32 `json:"tweet_id"`
 		}
 		if err := c.BindJSON(&req); err != nil {
@@ -20,8 +19,15 @@ func CreateBookmarkHandler(db *generated.Queries) gin.HandlerFunc {
 			return
 		}
 
+		// ログインユーザーのIDを取得
+		userID, exists := c.Get("userID")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "ユーザーが認証されていません"})
+			return
+		}
+
 		params := generated.CreateBookmarkParams{
-			UserID:  req.UserID,
+			UserID:  int32(userID.(int)), // ログインユーザーのIDを使用
 			TweetID: req.TweetID,
 		}
 
@@ -58,7 +64,6 @@ func ListBookmarksHandler(db *generated.Queries) gin.HandlerFunc {
 func DeleteBookmarkHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
-			UserID  int32 `json:"user_id"`
 			TweetID int32 `json:"tweet_id"`
 		}
 		if err := c.BindJSON(&req); err != nil {
@@ -66,8 +71,15 @@ func DeleteBookmarkHandler(db *generated.Queries) gin.HandlerFunc {
 			return
 		}
 
+		// ログインユーザーのIDを取得
+		userID, exists := c.Get("userID")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "ユーザーが認証されていません"})
+			return
+		}
+
 		params := generated.DeleteBookmarkParams{
-			UserID:  req.UserID,
+			UserID:  int32(userID.(int)), // ログインユーザーのIDを使用
 			TweetID: req.TweetID,
 		}
 
