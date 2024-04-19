@@ -14,6 +14,7 @@ type GetAllTweetsResponse struct {
 	RetweetCount int64  `json:"retweet_count"`
 	LikeCount    int64  `json:"like_count"`
 	Username     string `json:"username"`
+	IsBookmarked bool   `json:"is_bookmarked"`
 }
 
 // CreateTweetWithImageHandler はツイートを投稿するためのハンドラ
@@ -69,6 +70,13 @@ func CreateTweetWithImageHandler(db *generated.Queries) gin.HandlerFunc {
 // GetAllTweetsHandler はデータベースからツイートのリストを取得するハンドラ
 func GetAllTweetsHandler(db *generated.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// ユーザーIDの取得
+		userID, exists := c.Get("userID")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "認証が必要です"})
+			return
+		}
+
 		// リクエストから limit と offset の値を取得
 		limitParam := c.DefaultQuery("limit", "10")
 		offsetParam := c.DefaultQuery("offset", "0")
@@ -89,6 +97,7 @@ func GetAllTweetsHandler(db *generated.Queries) gin.HandlerFunc {
 		params := generated.GetAllTweetsParams{
 			Limit:  int32(limit),
 			Offset: int32(offset),
+			UserID: int32(userID.(int)), // 現在のユーザーIDを設定
 		}
 		tweets, err := db.GetAllTweets(c, params)
 		if err != nil {
@@ -104,6 +113,7 @@ func GetAllTweetsHandler(db *generated.Queries) gin.HandlerFunc {
 				RetweetCount:    tweet.RetweetCount,
 				LikeCount:       tweet.LikeCount,
 				Username:        tweet.Username,
+				IsBookmarked:    tweet.IsBookmarked,
 			}
 		}
 
