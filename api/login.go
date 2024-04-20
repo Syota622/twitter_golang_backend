@@ -40,6 +40,12 @@ func LoginHandler(db *generated.Queries, rdb *redis.Client, ctx context.Context)
 			return
 		}
 
+		// ユーザーが退会済みでないかどうかをチェック
+		if user.IsDeleted {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "このユーザーは退会済みです"})
+			return
+		}
+
 		// パスワードを検証
 		match := utils.CheckPasswordHash(req.Password, user.HashedPassword)
 		if !match {
