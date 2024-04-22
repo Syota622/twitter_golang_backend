@@ -92,4 +92,5 @@ type User struct {
 	Bio                sql.NullString `json:"bio"`
 	ProfileImageUrl    sql.NullString `json:"profile_image_url"`
 	BackgroundImageUrl sql.NullString `json:"background_image_url"`
+	IsDeleted          bool           `json:"is_deleted"`
 }

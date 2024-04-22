@@ -77,4 +77,5 @@ func SetupRoutes(router *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	authGroup.POST("/bookmark", api.CreateBookmarkHandler(queryHandler))                  // ブックマーク追加
 	authGroup.GET("/bookmarks/:userId", api.ListBookmarksHandler(queryHandler))           // ブックマーク一覧を取得
 	authGroup.DELETE("/bookmark", api.DeleteBookmarkHandler(queryHandler))                // ブックマーク削除
+	authGroup.DELETE("/users/delete", api.DeleteUserHandler(queryHandler))                // 退会処理
 }
